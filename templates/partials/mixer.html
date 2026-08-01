@@ -1,33 +1,45 @@
-<div class="mixer-section p-4 mb-4">
-  <h5 class="mb-3">Recommendation Mixer</h5>
-  <div class="row g-3">
-    <div class="col-md-3">
-      <label class="form-label d-flex justify-content-between">Mood <span id="mixer-mood-value" class="mixer-value">50</span></label>
-      <input type="range" class="form-range" id="mixer-mood" min="0" max="100" value="50" disabled>
-      <div class="d-flex justify-content-between text-secondary" style="font-size:.75rem">
-        <span>Light</span><span>Dark</span>
-      </div>
+<div class="mixer-section px-3 py-2 mb-3">
+  <h6 class="mb-2" style="font-size:.8rem">Mixer</h6>
+  <div class="mb-2">
+    <label class="form-label mb-0 d-flex justify-content-between" style="font-size:.75rem">Mood <span id="mixer-mood-value" class="mixer-value">50</span></label>
+    <input type="range" class="form-range" id="mixer-mood" min="0" max="100" value="50" disabled>
+    <div class="d-flex justify-content-between text-secondary" style="font-size:.65rem">
+      <span>Light</span><span>Dark</span>
     </div>
-    <div class="col-md-3">
-      <label class="form-label d-flex justify-content-between">Energy <span id="mixer-energy-value" class="mixer-value">50</span></label>
-      <input type="range" class="form-range" id="mixer-energy" min="0" max="100" value="50" disabled>
-      <div class="d-flex justify-content-between text-secondary" style="font-size:.75rem">
-        <span>Slow burn</span><span>Intense</span>
-      </div>
+  </div>
+  <div class="mb-2">
+    <label class="form-label mb-0 d-flex justify-content-between" style="font-size:.75rem">Energy <span id="mixer-energy-value" class="mixer-value">50</span></label>
+    <input type="range" class="form-range" id="mixer-energy" min="0" max="100" value="50" disabled>
+    <div class="d-flex justify-content-between text-secondary" style="font-size:.65rem">
+      <span>Slow burn</span><span>Intense</span>
     </div>
-    <div class="col-md-3">
-      <label class="form-label d-flex justify-content-between">Tension <span id="mixer-tension-value" class="mixer-value">50</span></label>
-      <input type="range" class="form-range" id="mixer-tension" min="0" max="100" value="50" disabled>
-      <div class="d-flex justify-content-between text-secondary" style="font-size:.75rem">
-        <span>Relaxing</span><span>Suspenseful</span>
-      </div>
+  </div>
+  <div class="mb-2">
+    <label class="form-label mb-0 d-flex justify-content-between" style="font-size:.75rem">Tension <span id="mixer-tension-value" class="mixer-value">50</span></label>
+    <input type="range" class="form-range" id="mixer-tension" min="0" max="100" value="50" disabled>
+    <div class="d-flex justify-content-between text-secondary" style="font-size:.65rem">
+      <span>Relaxing</span><span>Suspenseful</span>
     </div>
-    <div class="col-md-3">
-      <label class="form-label d-flex justify-content-between">Emotional Weight <span id="mixer-weight-value" class="mixer-value">50</span></label>
-      <input type="range" class="form-range" id="mixer-weight" min="0" max="100" value="50" disabled>
-      <div class="d-flex justify-content-between text-secondary" style="font-size:.75rem">
-        <span>Light</span><span>Heavy</span>
-      </div>
+  </div>
+  <div class="mb-2">
+    <label class="form-label mb-0 d-flex justify-content-between" style="font-size:.75rem">Weight <span id="mixer-weight-value" class="mixer-value">50</span></label>
+    <input type="range" class="form-range" id="mixer-weight" min="0" max="100" value="50" disabled>
+    <div class="d-flex justify-content-between text-secondary" style="font-size:.65rem">
+      <span>Light</span><span>Heavy</span>
+    </div>
+  </div>
+  <div class="form-check mb-2">
+    <input type="checkbox" class="form-check-input" id="exclude-title" disabled>
+    <label class="form-check-label" for="exclude-title" style="font-size:.75rem">Exclude title words</label>
+  </div>
+  <div>
+    <label class="form-label mb-1" style="font-size:.75rem">Year</label>
+    <div class="d-flex gap-1 align-items-center">
+      <input type="number" id="year-from" class="form-control form-control-sm bg-dark text-light border-secondary"
+             placeholder="From" min="1900" max="2030" disabled style="font-size:.75rem">
+      <span class="text-secondary" style="font-size:.75rem">–</span>
+      <input type="number" id="year-to" class="form-control form-control-sm bg-dark text-light border-secondary"
+             placeholder="To" min="1900" max="2030" disabled style="font-size:.75rem">
     </div>
   </div>
 </div>

@@ -1,8 +1,10 @@
-<div id="source-movie" class="source-banner p-3 mb-4 d-flex align-items-center gap-3 d-none">
-  <img id="source-poster" src="" alt="" style="width:60px; border-radius:4px">
-  <div>
-    <h5 id="source-title" class="mb-0"></h5>
-    <small id="source-genres" class="text-secondary"></small>
+<div id="source-movie" class="source-banner px-3 py-2 mb-3 d-none">
+  <div class="d-flex align-items-center gap-2">
+    <img id="source-poster" src="" alt="" style="width:36px; border-radius:4px">
+    <div class="text-truncate flex-grow-1">
+      <div id="source-title" class="text-truncate" style="font-size:.8rem; font-weight:600"></div>
+      <small id="source-genres" class="text-secondary" style="font-size:.7rem"></small>
+    </div>
+    <button class="btn btn-sm btn-outline-light py-0 px-2 flex-shrink-0" style="font-size:.7rem" onclick="resetSearch()">Clear</button>
   </div>
-  <button class="btn btn-sm btn-outline-light ms-auto" onclick="resetSearch()">Clear</button>
 </div>

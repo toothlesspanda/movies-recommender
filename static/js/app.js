@@ -4,8 +4,10 @@ const dropdown = document.getElementById("search-dropdown");
 
 const SLIDERS = ["mood", "energy", "tension", "weight"];
 let currentMovieId = null;
+let currentMovieTitle = "";
 let debounceTimer;
 let mixerTimer;
+let lastRelatedMovies = [];
 
 // --- Search ---
 
@@ -48,11 +50,10 @@ async function selectMovie(movie) {
   dropdown.classList.remove("show");
   searchInput.value = movie.title;
   currentMovieId = movie.id;
+  currentMovieTitle = movie.title;
 
-  // Shrink hero
-  document.getElementById("hero").style.minHeight = "auto";
-  document.getElementById("hero").classList.remove("justify-content-center");
-  document.getElementById("hero").classList.add("pt-4", "pb-3");
+  // Hide subtitle when movie selected
+  document.querySelector("#hero p").classList.add("d-none");
 
   // Show source movie banner
   const src = document.getElementById("source-movie");
@@ -78,6 +79,10 @@ SLIDERS.forEach(name => {
   });
 });
 
+document.getElementById("exclude-title").addEventListener("change", () => renderFiltered());
+document.getElementById("year-from").addEventListener("input", () => renderFiltered());
+document.getElementById("year-to").addEventListener("input", () => renderFiltered());
+
 function getMixerParams() {
   const params = new URLSearchParams();
   SLIDERS.forEach(name => {
@@ -97,12 +102,19 @@ function setSliders(profile) {
     slider.disabled = false;
     valueEl.textContent = profile[name];
   });
+  document.getElementById("exclude-title").disabled = false;
+  document.getElementById("year-from").disabled = false;
+  document.getElementById("year-to").disabled = false;
 }
 
 // --- Fetch related ---
 
 async function fetchRelated() {
   if (!currentMovieId) return;
+  const grid = document.getElementById("related-grid");
+  grid.innerHTML = '<div class="text-center py-5"><div class="spinner-border text-secondary" role="status"><span class="visually-hidden">Loading...</span></div></div>';
+  document.getElementById("no-related").classList.add("d-none");
+
   const params = getMixerParams();
   const url = `/api/related/${currentMovieId}${params ? "?" + params : ""}`;
   const res = await fetch(url);
@@ -113,7 +125,35 @@ async function fetchRelated() {
     setSliders(data.source_emotions);
   }
 
-  renderRelated(data.related || []);
+  lastRelatedMovies = data.related || [];
+  renderFiltered();
+}
+
+function renderFiltered() {
+  let filtered = lastRelatedMovies;
+
+  if (document.getElementById("exclude-title").checked) {
+    const stopWords = new Set(["the","a","an","and","or","of","in","on","at","to","for","is","it","by","from","with","as","but","not","no","be","was","are","were","been","do","does","did","has","have","had","this","that","its","into","than","up","out","all","one","two"]);
+    const words = currentMovieTitle.toLowerCase().split(/\s+/).filter(w => w.length > 2 && !stopWords.has(w));
+    filtered = filtered.filter(m => {
+      const t = m.title.toLowerCase();
+      return !words.some(w => t.includes(w));
+    });
+  }
+
+  const yearFrom = parseInt(document.getElementById("year-from").value);
+  const yearTo = parseInt(document.getElementById("year-to").value);
+  if (yearFrom || yearTo) {
+    filtered = filtered.filter(m => {
+      const year = m.release_date ? parseInt(m.release_date.substring(0, 4)) : null;
+      if (!year) return false;
+      if (yearFrom && year < yearFrom) return false;
+      if (yearTo && year > yearTo) return false;
+      return true;
+    });
+  }
+
+  renderRelated(filtered);
 }
 
 // --- Render ---
@@ -126,21 +166,47 @@ function renderRelated(movies) {
   noMsg.classList.add("d-none");
   movies.forEach(m => {
     const year = m.release_date ? m.release_date.substring(0, 4) : "";
-    const genres = (m.genres || "").split(",").filter(Boolean);
     const col = document.createElement("div");
-    col.className = "col-6 col-md-3 col-lg-2";
+    col.className = "col-6 col-sm-4 col-md-3 col-xl-2";
     col.innerHTML = `
       <div class="movie-card h-100">
-        ${m.poster_path ? `<img src="${TMDB_IMG}${m.poster_path}" alt="${m.title}">` : '<div style="height:280px;background:#0f3460"></div>'}
+        ${m.poster_path ? `<img src="${TMDB_IMG}${m.poster_path}" alt="${m.title}">` : '<div style="height:280px;background:#333"></div>'}
         <div class="card-body">
           <div class="card-title">${m.title} ${year ? `<small class="text-secondary">(${year})</small>` : ""}</div>
-          <div>${genres.map(g => `<span class="badge bg-secondary me-1">${g.trim()}</span>`).join("")}</div>
-          ${m.vote_average ? `<small class="text-warning">${Number(m.vote_average).toFixed(1)}</small>` : ""}
         </div>
       </div>`;
-    col.querySelector(".movie-card").addEventListener("click", () => selectMovie(m));
+    col.querySelector(".movie-card").addEventListener("click", () => openDetail(m));
     grid.appendChild(col);
   });
+}
+
+// --- Detail modal ---
+
+async function openDetail(movie) {
+  const res = await fetch(`/api/movies/${movie.id}`);
+  const detail = await res.json();
+
+  const year = detail.release_date ? detail.release_date.substring(0, 4) : "";
+  const genres = (detail.genres || "").split(",").filter(Boolean);
+  const rating = detail.vote_average ? Number(detail.vote_average).toFixed(1) : null;
+
+  document.getElementById("detail-poster").src = detail.poster_path ? TMDB_IMG + detail.poster_path : "";
+  document.getElementById("detail-title").textContent = detail.title + (year ? ` (${year})` : "");
+  document.getElementById("detail-rating").innerHTML = rating ? `★ ${rating}` : "";
+  document.getElementById("detail-genres").innerHTML = genres.map(g => `<span class="badge bg-secondary me-1">${g.trim()}</span>`).join("");
+  document.getElementById("detail-directors").textContent = detail.directors || "";
+  document.getElementById("detail-actors").textContent = detail.actors || "";
+  document.getElementById("detail-directors-row").classList.toggle("d-none", !detail.directors);
+  document.getElementById("detail-actors-row").classList.toggle("d-none", !detail.actors);
+  document.getElementById("detail-description").textContent = detail.description || "";
+
+  const btn = document.getElementById("detail-find-similar");
+  btn.onclick = () => {
+    bootstrap.Modal.getInstance(document.getElementById("detailModal")).hide();
+    selectMovie(detail);
+  };
+
+  new bootstrap.Modal(document.getElementById("detailModal")).show();
 }
 
 // --- Reset ---
@@ -148,9 +214,7 @@ function renderRelated(movies) {
 function resetSearch() {
   searchInput.value = "";
   currentMovieId = null;
-  document.getElementById("hero").style.minHeight = "60vh";
-  document.getElementById("hero").classList.add("justify-content-center");
-  document.getElementById("hero").classList.remove("pt-4", "pb-3");
+  document.querySelector("#hero p").classList.remove("d-none");
   document.getElementById("source-movie").classList.add("d-none");
   document.getElementById("results").classList.add("d-none");
   document.getElementById("related-grid").innerHTML = "";
@@ -160,6 +224,16 @@ function resetSearch() {
     slider.disabled = true;
     document.getElementById(`mixer-${name}-value`).textContent = "50";
   });
+  const excludeCheck = document.getElementById("exclude-title");
+  excludeCheck.checked = false;
+  excludeCheck.disabled = true;
+  const yearFrom = document.getElementById("year-from");
+  const yearTo = document.getElementById("year-to");
+  yearFrom.value = "";
+  yearTo.value = "";
+  yearFrom.disabled = true;
+  yearTo.disabled = true;
+  lastRelatedMovies = [];
   searchInput.focus();
 }
 
