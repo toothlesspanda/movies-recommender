@@ -62,7 +62,11 @@ async function selectMovie(movie) {
   document.getElementById("source-title").textContent = movie.title;
   document.getElementById("source-genres").textContent = movie.genres || "";
 
-  // Fetch related (no mixer params = use source movie defaults)
+  // Reset sliders so fetchRelated uses source movie defaults
+  SLIDERS.forEach(name => {
+    document.getElementById(`mixer-${name}`).disabled = true;
+  });
+
   document.getElementById("results").classList.remove("d-none");
   await fetchRelated();
 }

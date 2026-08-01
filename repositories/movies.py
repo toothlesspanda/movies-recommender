@@ -32,11 +32,14 @@ def get_movie_genres_by_id(db, movie_id):
 def get_movies_by_ids(db, movie_ids):
   placeholder_string = ",".join("?" * len(movie_ids))
   return db.execute(
-        f"""SELECT m.*, GROUP_CONCAT(g.name) AS genres
+        f"""SELECT m.*, GROUP_CONCAT(DISTINCT g.name) AS genres
         FROM movies m
         LEFT JOIN movie_genres mg ON mg.movie_id = m.id
         LEFT JOIN genres g ON g.id = mg.genre_id
         WHERE m.id IN ({placeholder_string})
+        AND m.vote_count >= 10
+        AND (EXISTS (SELECT 1 FROM movie_genres mg2 WHERE mg2.movie_id = m.id)
+             OR EXISTS (SELECT 1 FROM movie_people mp WHERE mp.movie_id = m.id))
         GROUP BY m.id""",
         movie_ids,
     ).fetchall()

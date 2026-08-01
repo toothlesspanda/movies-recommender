@@ -55,11 +55,12 @@ def api_related(movie_id):
         request.args.get("weight", source_profile["weight"], type=int),
     ]
 
-    top_movie_ids = find_related(me_movie["embedding"], movie_id, target_emotions, limit=100, candidates_pool=400)
+    source_emotions = [source_profile["mood"], source_profile["energy"], source_profile["tension"], source_profile["weight"]]
+    top_movie_ids = find_related(me_movie["embedding"], movie_id, target_emotions, source_emotions, limit=300, candidates_pool=800)
     related_rows = movie_repo.get_movies_by_ids(db, top_movie_ids)
     # Preserve ranking order from find_related
     by_id = {r["id"]: dict(r) for r in related_rows}
-    related = [by_id[mid] for mid in top_movie_ids if mid in by_id]
+    related = [by_id[mid] for mid in top_movie_ids if mid in by_id][:100]
 
     return jsonify({
         "source": dict(movie),

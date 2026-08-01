@@ -39,8 +39,18 @@ def _load():
     print(f"Loaded Faiss index ({_faiss_index.ntotal} vectors) + {len(ids)} emotions.")
 
 
-def find_related(source_embedding, movie_id, target_emotions, limit=50, candidates_pool=200):
+def find_related(source_embedding, movie_id, target_emotions, source_emotions=None, limit=50, candidates_pool=200):
     _load()
+
+    # Dynamic weighting: more slider movement = more emotional weight
+    # No change: 50/50, max change: 20/80
+    if source_emotions:
+        diff = np.mean(np.abs(np.array(target_emotions) - np.array(source_emotions))) / 100.0
+        emo_weight = 0.5 + diff * 0.6  # 0.5 to 0.8
+        emo_weight = min(emo_weight, 0.8)
+    else:
+        emo_weight = 0.5
+    fact_weight = 1.0 - emo_weight
 
     # Normalise source for cosine similarity
     source_vector = np.frombuffer(source_embedding, dtype=np.float32).reshape(1, -1).copy()
@@ -52,7 +62,7 @@ def find_related(source_embedding, movie_id, target_emotions, limit=50, candidat
     for score, idx in zip(factual_scores[0], factual_indices[0]):
         mid = int(_faiss_ids[idx])
         if mid != movie_id:
-            candidates[mid] = score * 0.5
+            candidates[mid] = score * fact_weight
 
     # Emotional similarity on candidates
     target_vec = np.array(target_emotions, dtype=np.float32)
@@ -60,6 +70,6 @@ def find_related(source_embedding, movie_id, target_emotions, limit=50, candidat
         if mid in _emotions_id_map:
             emo_idx = _emotions_id_map[mid]
             emo_score = similar.cosine_similarity(target_vec, _emotions_matrix[emo_idx:emo_idx+1])[0]
-            candidates[mid] += emo_score * 0.5
+            candidates[mid] += emo_score * emo_weight
 
     return sorted(candidates, key=candidates.get, reverse=True)[:limit]
