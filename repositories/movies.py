@@ -4,16 +4,21 @@ def get_all(db):
 def search(db, query):
   return db.execute(
         """
-        SELECT m.*, GROUP_CONCAT(g.name) AS genres
+        SELECT m.*, GROUP_CONCAT(g.name) AS genres,
+               CASE
+                 WHEN m.title = ? THEN 3
+                 WHEN m.title LIKE ? THEN 2
+                 ELSE 1
+               END AS match_rank
         FROM movies m
         LEFT JOIN movie_genres mg ON mg.movie_id = m.id
         LEFT JOIN genres g ON g.id = mg.genre_id
         WHERE m.title LIKE ?
         GROUP BY m.id
-        ORDER BY m.popularity DESC
+        ORDER BY match_rank DESC, m.popularity DESC
         LIMIT 20
         """,
-        (f"%{query}%",)).fetchall()
+        (query, f"{query}%", f"%{query}%")).fetchall()
 
 def get_movie_by_id(db, movie_id):
   return db.execute("SELECT * FROM movies WHERE id = ?", (movie_id,)).fetchone()
