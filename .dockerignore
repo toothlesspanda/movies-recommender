@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+.env
+movies.db
+movies.db-wal
+movies.db-shm
+movies.faiss
+movies_faiss_ids.npy
+.git
+.DS_Store
+CLAUDE.md
+context.md
