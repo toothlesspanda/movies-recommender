@@ -167,10 +167,10 @@ function renderRelated(movies) {
   movies.forEach(m => {
     const year = m.release_date ? m.release_date.substring(0, 4) : "";
     const col = document.createElement("div");
-    col.className = "col-6 col-sm-4 col-md-3 col-xl-2";
+    col.className = "col-6 col-sm-4 col-lg-3";
     col.innerHTML = `
       <div class="movie-card h-100">
-        ${m.poster_path ? `<img src="${TMDB_IMG}${m.poster_path}" alt="${m.title}">` : '<div style="height:280px;background:#333"></div>'}
+        ${m.poster_path ? `<img src="${TMDB_IMG}${m.poster_path}" alt="${m.title}">` : '<div class="no-poster d-flex align-items-center justify-content-center"><svg width="40" height="40" fill="#555" viewBox="0 0 16 16"><path d="M0 1a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H1a1 1 0 0 1-1-1V1zm4 0v6l2-1 2 1V1H4z"/></svg></div>'}
         <div class="card-body">
           <div class="card-title">${m.title} ${year ? `<small class="text-secondary">(${year})</small>` : ""}</div>
         </div>
