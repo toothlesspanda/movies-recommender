@@ -47,5 +47,5 @@ jobs:
             docker pull ghcr.io/toothlesspanda/movies-recommender:latest
             docker stop app || true
             docker rm app || true
-            docker run -d --name app -p 80:5000 -v /root/data:/app/data --restart unless-stopped ghcr.io/toothlesspanda/movies-recommender:latest
+            docker run -d --name app -p 127.0.0.1:5000:5000 -v /root/data:/app/data --restart unless-stopped ghcr.io/toothlesspanda/movies-recommender:latest
             docker image prune -f
