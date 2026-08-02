@@ -1,3 +1,4 @@
+import time
 import requests
 from config import TMDB_ACCESS_TOKEN
 
@@ -16,12 +17,20 @@ def get_genres():
 
 def get_credits(movie_tmdb_id):
     response = requests.get(f"{BASE_URL}/movie/{movie_tmdb_id}/credits", headers=_headers)
+    if response.status_code == 429:
+        raise RateLimitError(movie_tmdb_id)
     response.raise_for_status()
     data = response.json()
     return {
         "cast": data.get("cast", []),
         "crew": data.get("crew", []),
     }
+
+
+class RateLimitError(Exception):
+    def __init__(self, tmdb_id):
+        self.tmdb_id = tmdb_id
+        super().__init__(f"Rate limited on tmdb_id {tmdb_id}")
 
 
 def get_movies(page=1, date_gte=None, date_lte=None):
