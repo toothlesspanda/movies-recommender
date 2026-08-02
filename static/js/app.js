@@ -57,6 +57,10 @@ async function selectMovie(movie) {
   currentMovieTitle = movie.title;
 
 
+  // Hide lucky controls, keep button
+  document.getElementById("lucky-controls").classList.add("d-none");
+  document.getElementById("lucky-intro").classList.add("d-none");
+
   // Show source movie banner
   const src = document.getElementById("source-movie");
   src.classList.remove("d-none");
@@ -190,8 +194,7 @@ function renderRelated(movies) {
 // --- Detail modal ---
 
 async function openDetail(movie) {
-  const res = await fetch(`/api/movies/${movie.id}`);
-  const detail = await res.json();
+  const detail = movie.directors !== undefined ? movie : await (await fetch(`/api/movies/${movie.id}`)).json();
 
   const year = detail.release_date ? detail.release_date.substring(0, 4) : "";
   const genres = (detail.genres || "").split(",").filter(Boolean);
@@ -222,6 +225,8 @@ async function openDetail(movie) {
 function resetSearch() {
   searchInput.value = "";
   currentMovieId = null;
+  document.getElementById("lucky-controls").classList.remove("d-none");
+  document.getElementById("lucky-intro").classList.remove("d-none");
   document.getElementById("source-movie").classList.add("d-none");
   document.getElementById("results").classList.add("d-none");
   document.getElementById("related-grid").innerHTML = "";
@@ -242,6 +247,45 @@ function resetSearch() {
   yearTo.disabled = true;
   lastRelatedMovies = [];
   searchInput.focus();
+}
+
+// --- Feeling Lucky ---
+
+function toggleGenre(btn) {
+  const selected = document.querySelectorAll(".genre-btn.active");
+  if (!btn.classList.contains("active") && selected.length >= 3) return;
+  btn.classList.toggle("active");
+}
+
+async function feelingLucky() {
+  const btn = document.getElementById("lucky-btn");
+  btn.disabled = true;
+  btn.textContent = "Searching...";
+
+  const useMixer = currentMovieId !== null;
+  const prefix = useMixer ? "mixer" : "lucky";
+  const params = new URLSearchParams({
+    mood: document.getElementById(`${prefix}-mood`).value,
+    energy: document.getElementById(`${prefix}-energy`).value,
+    tension: document.getElementById(`${prefix}-tension`).value,
+    weight: document.getElementById(`${prefix}-weight`).value,
+  });
+  if (useMixer) {
+    params.set("movie_id", currentMovieId);
+  } else {
+    const genreIds = [...document.querySelectorAll(".genre-btn.active")].map(b => b.dataset.genreId);
+    if (genreIds.length) params.set("genres", genreIds.join(","));
+  }
+
+  const res = await fetch(`/api/lucky?${params}`);
+  const movie = await res.json();
+
+  btn.disabled = false;
+  btn.textContent = "Feeling Lucky";
+
+  if (movie.error) return;
+  trackEvent("feeling-lucky");
+  openDetail(movie);
 }
 
 // Close dropdown on outside click

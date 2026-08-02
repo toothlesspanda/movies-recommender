@@ -30,6 +30,13 @@ body {
   box-shadow: 0 0 0 .2rem rgba(252,158,79,.25);
 }
 
+/* --- Lucky --- */
+.lucky-section { max-width: 550px; }
+.lucky-slider { width: 100px; text-align: center; }
+.genre-btn { font-size: .75rem; border-color: #444; color: #e0e0e0; }
+.genre-btn:hover { border-color: #FC9E4F; color: #FC9E4F; }
+.genre-btn.active { background: #FC9E4F; color: #1a1a1a; border-color: #FC9E4F; }
+
 /* --- Dropdown --- */
 .dropdown-menu {
   background: #242424;
@@ -98,6 +105,13 @@ body {
 .btn-select-movie:hover { background: #e88a3a; color: #1a1a1a; }
 .btn-outline-light { color: #e0e0e0; border-color: #e0e0e060; }
 .btn-outline-light:hover { background: #FC9E4F; color: #1a1a1a; }
+
+/* --- Footer --- */
+.site-footer {
+  border-top: 1px solid #333333;
+  color: #e0e0e060;
+  font-size: .75rem;
+}
 
 /* --- Utilities --- */
 .text-secondary { color: #e0e0e080 !important; }

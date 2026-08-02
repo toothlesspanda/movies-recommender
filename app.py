@@ -15,4 +15,7 @@ app.register_blueprint(movies_bp)
 
 @app.route("/")
 def index():
-    return render_template("index.html")
+    from db import get_db
+    db = get_db()
+    genres = db.execute("SELECT id, name FROM genres ORDER BY name").fetchall()
+    return render_template("index.html", genres=genres)

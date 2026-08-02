@@ -1,3 +1,4 @@
+import random
 from flask import Blueprint, request, jsonify
 from db import get_db
 import repositories.movies as movie_repo
@@ -31,6 +32,50 @@ def api_movie_detail(movie_id):
     movie = movie_repo.get_movie_detail(db, movie_id)
     if not movie:
         return jsonify({"error": "Movie not found"}), 404
+    return jsonify(movie)
+
+
+@bp.route("/api/lucky")
+def api_lucky():
+    mood = request.args.get("mood", 50, type=int)
+    energy = request.args.get("energy", 50, type=int)
+    tension = request.args.get("tension", 50, type=int)
+    weight = request.args.get("weight", 50, type=int)
+    genres_param = request.args.get("genres", "")
+    genre_ids = [int(g) for g in genres_param.split(",") if g.strip().isdigit()]
+    movie_id = request.args.get("movie_id", type=int)
+
+    db = get_db()
+    exclude_id = movie_id or 0
+    params = [mood, energy, tension, weight, exclude_id]
+
+    # Use genres from source movie if provided
+    if movie_id and not genre_ids:
+        rows = db.execute("SELECT genre_id FROM movie_genres WHERE movie_id = ?", (movie_id,)).fetchall()
+        genre_ids = [r["genre_id"] for r in rows]
+
+    genre_filter = ""
+    if genre_ids:
+        placeholders = ",".join("?" * len(genre_ids))
+        genre_filter = f"""AND EXISTS (SELECT 1 FROM movie_genres mg2
+            WHERE mg2.movie_id = m.id AND mg2.genre_id IN ({placeholders}))"""
+        params.extend(genre_ids)
+
+    rows = db.execute(f"""
+        SELECT m.id,
+               ABS(me.mood - ?) + ABS(me.energy - ?) + ABS(me.tension - ?) + ABS(me.weight - ?) AS dist
+        FROM movie_emotions me
+        JOIN movies m ON m.id = me.movie_id
+        WHERE m.vote_count >= 50 AND m.vote_average >= 5
+        AND m.id != ?
+        {genre_filter}
+        ORDER BY dist ASC
+        LIMIT 50
+    """, params).fetchall()
+    if not rows:
+        return jsonify({"error": "No movies found"}), 404
+    pick = random.choice(rows[:20])
+    movie = movie_repo.get_movie_detail(db, pick["id"])
     return jsonify(movie)
 
 

@@ -1,9 +1,42 @@
 <div id="hero" class="text-center py-5">
   <h1 class="hero-title mb-2">Lucky Movie</h1>
   <p class="text-secondary mb-4" style="font-size:1rem">Find your next favourite film based on what you already love</p>
-  <div class="search-wrapper position-relative mx-auto">
+  <div class="search-wrapper position-relative mx-auto mb-4">
     <input id="search-input" type="text" class="form-control form-control-lg bg-dark text-light border-secondary"
            placeholder="Search a movie..." autocomplete="off">
     <div id="search-dropdown" class="dropdown-menu w-100"></div>
+  </div>
+  <div class="lucky-section mx-auto">
+    <p id="lucky-intro" class="text-secondary mb-3" style="font-size:.85rem">Or set your mood and let us pick for you</p>
+    <div id="lucky-controls">
+      <div class="lucky-genres d-flex flex-wrap justify-content-center gap-2 mb-3">
+        {% for genre in genres %}
+        <button class="btn btn-sm btn-outline-secondary genre-btn" data-genre-id="{{ genre.id }}" onclick="toggleGenre(this)">{{ genre.name }}</button>
+        {% endfor %}
+      </div>
+      <div class="d-flex justify-content-center gap-4 mb-3 flex-wrap">
+        <div class="lucky-slider">
+          <label class="form-label mb-0" style="font-size:.75rem">Mood</label>
+          <input type="range" class="form-range" id="lucky-mood" min="0" max="100" value="50">
+          <div class="d-flex justify-content-between text-secondary" style="font-size:.6rem"><span>Light</span><span>Dark</span></div>
+        </div>
+        <div class="lucky-slider">
+          <label class="form-label mb-0" style="font-size:.75rem">Energy</label>
+          <input type="range" class="form-range" id="lucky-energy" min="0" max="100" value="50">
+          <div class="d-flex justify-content-between text-secondary" style="font-size:.6rem"><span>Slow burn</span><span>Intense</span></div>
+        </div>
+        <div class="lucky-slider">
+          <label class="form-label mb-0" style="font-size:.75rem">Tension</label>
+          <input type="range" class="form-range" id="lucky-tension" min="0" max="100" value="50">
+          <div class="d-flex justify-content-between text-secondary" style="font-size:.6rem"><span>Relaxing</span><span>Suspenseful</span></div>
+        </div>
+        <div class="lucky-slider">
+          <label class="form-label mb-0" style="font-size:.75rem">Depth</label>
+          <input type="range" class="form-range" id="lucky-weight" min="0" max="100" value="50">
+          <div class="d-flex justify-content-between text-secondary" style="font-size:.6rem"><span>Light</span><span>Heavy</span></div>
+        </div>
+      </div>
+    </div>
+    <button id="lucky-btn" class="btn btn-select-movie px-4" onclick="feelingLucky()">Feeling Lucky</button>
   </div>
 </div>
