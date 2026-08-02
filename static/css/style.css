@@ -109,9 +109,13 @@ body {
 /* --- Footer --- */
 .site-footer {
   border-top: 1px solid #333333;
+  background: #1a1a1a;
   color: #e0e0e060;
   font-size: .75rem;
 }
+.site-footer a { color: #e0e0e080; text-decoration: none; }
+.site-footer a:hover { color: #e0e0e0; }
+.footer-text-link { font-weight: 600; font-size: .8rem; }
 
 /* --- Utilities --- */
 .text-secondary { color: #e0e0e080 !important; }
