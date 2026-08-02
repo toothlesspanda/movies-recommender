@@ -9,6 +9,10 @@ let debounceTimer;
 let mixerTimer;
 let lastRelatedMovies = [];
 
+function trackEvent(name) {
+  if (window.goatcounter) goatcounter.count({ path: name, title: name, event: true });
+}
+
 // --- Search ---
 
 searchInput.addEventListener("input", () => {
@@ -68,6 +72,7 @@ async function selectMovie(movie) {
   });
 
   document.getElementById("results").classList.remove("d-none");
+  trackEvent("search-select");
   await fetchRelated();
 }
 
@@ -79,7 +84,7 @@ SLIDERS.forEach(name => {
   slider.addEventListener("input", () => {
     valueEl.textContent = slider.value;
     clearTimeout(mixerTimer);
-    mixerTimer = setTimeout(() => fetchRelated(), 400);
+    mixerTimer = setTimeout(() => { trackEvent("mixer-use"); fetchRelated(); }, 400);
   });
 });
 
@@ -206,6 +211,7 @@ async function openDetail(movie) {
 
   const btn = document.getElementById("detail-find-similar");
   btn.onclick = () => {
+    trackEvent("find-similar");
     bootstrap.Modal.getInstance(document.getElementById("detailModal")).hide();
     selectMovie(detail);
   };
