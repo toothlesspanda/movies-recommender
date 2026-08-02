@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, send_from_directory
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from db import init_app
@@ -19,3 +19,10 @@ def index():
     db = get_db()
     genres = db.execute("SELECT id, name FROM genres ORDER BY name").fetchall()
     return render_template("index.html", genres=genres)
+
+
+@app.route("/robots.txt")
+@app.route("/sitemap.xml")
+def static_from_root():
+    from flask import request
+    return send_from_directory(app.static_folder, request.path[1:])
