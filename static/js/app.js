@@ -56,8 +56,6 @@ async function selectMovie(movie) {
   currentMovieId = movie.id;
   currentMovieTitle = movie.title;
 
-  // Hide subtitle when movie selected
-  document.querySelector("#hero p").classList.add("d-none");
 
   // Show source movie banner
   const src = document.getElementById("source-movie");
@@ -224,7 +222,6 @@ async function openDetail(movie) {
 function resetSearch() {
   searchInput.value = "";
   currentMovieId = null;
-  document.querySelector("#hero p").classList.remove("d-none");
   document.getElementById("source-movie").classList.add("d-none");
   document.getElementById("results").classList.add("d-none");
   document.getElementById("related-grid").innerHTML = "";

@@ -1,33 +1,106 @@
-body { background: #1a1a1a; color: #e0e0e0; min-height: 100vh; font-size: 1.05rem; }
-.search-wrapper { max-width: 500px; }
-.movie-card { background: #242424; border: 1px solid #333333; border-radius: 8px; transition: transform .15s; cursor: pointer; }
-.movie-card:hover { transform: translateY(-4px); border-color: #FC9E4F; }
-.movie-card img { border-radius: 8px 8px 0 0; width: 100%; height: 160px; object-fit: contain; background: #1a1a1a; }
-.movie-card .no-poster { height: 160px; background: #242424; border-radius: 8px 8px 0 0; }
+/* --- Base --- */
+body {
+  background: #1a1a1a;
+  color: #e0e0e0;
+  min-height: 100vh;
+  font-family: 'Inter', sans-serif;
+  font-size: 1.05rem;
+}
+
+/* --- Hero --- */
+#hero {
+  background: radial-gradient(ellipse at top, #2a2215 0%, #1a1a1a 70%);
+}
+.hero-title {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: #FC9E4F;
+}
+.search-wrapper {
+  max-width: 500px;
+}
+#search-input {
+  background: #242424 !important;
+  color: #e0e0e0 !important;
+  border-color: #333333 !important;
+}
+#search-input::placeholder { color: #e0e0e060; }
+#search-input:focus {
+  border-color: #FC9E4F !important;
+  box-shadow: 0 0 0 .2rem rgba(252,158,79,.25);
+}
+
+/* --- Dropdown --- */
+.dropdown-menu {
+  background: #242424;
+  border: 1px solid #333333;
+  max-height: 350px;
+  overflow-y: auto;
+}
+.dropdown-item { color: #e0e0e0; }
+.dropdown-item:hover, .dropdown-item:focus { background: #333333; color: #FC9E4F; }
+
+/* --- Cards --- */
+.movie-card {
+  background: #242424;
+  border: 1px solid #333333;
+  border-radius: 8px;
+  transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+  cursor: pointer;
+}
+.movie-card:hover {
+  transform: translateY(-4px);
+  border-color: #FC9E4F;
+  box-shadow: 0 8px 24px rgba(0,0,0,.4);
+}
+.movie-card img {
+  border-radius: 8px 8px 0 0;
+  width: 100%;
+  height: 160px;
+  object-fit: contain;
+  background: #1a1a1a;
+}
+.movie-card .no-poster {
+  height: 160px;
+  background: #242424;
+  border-radius: 8px 8px 0 0;
+}
 .movie-card .card-body { padding: .5rem; }
 .movie-card .card-title { font-size: .8rem; font-weight: 600; }
 .movie-card .badge { font-size: .7rem; background: #333333 !important; color: #e0e0e0; }
-.source-banner { background: #242424; border: 1px solid #333333; border-radius: 8px; }
-.mixer-section { background: #242424; border-radius: 8px; border: 1px solid #333333; }
-#search-input { background: #242424 !important; color: #e0e0e0 !important; border-color: #333333 !important; }
-#search-input::placeholder { color: #e0e0e060; }
-#search-input:focus { border-color: #FC9E4F !important; box-shadow: 0 0 0 .2rem rgba(252,158,79,.25); }
-.dropdown-menu { background: #242424; border: 1px solid #333333; max-height: 350px; overflow-y: auto; }
-.dropdown-item { color: #e0e0e0; }
-.dropdown-item:hover, .dropdown-item:focus { background: #333333; color: #FC9E4F; }
-.mixer-value { font-size: .75rem; color: #FC9E4F; font-weight: 600; min-width: 28px; text-align: center; }
-.text-secondary { color: #e0e0e080 !important; }
-.btn-outline-light { color: #e0e0e0; border-color: #e0e0e060; }
-.btn-outline-light:hover { background: #FC9E4F; color: #1a1a1a; }
-.text-warning { color: #FC9E4F !important; }
-h1, h6 { color: #e0e0e0; }
-.form-label { color: #e0e0e0; }
+
+/* --- Sidebar --- */
+.source-banner {
+  background: #242424;
+  border: 1px solid #333333;
+  border-radius: 8px;
+}
+.mixer-section {
+  background: #242424;
+  border-radius: 8px;
+  border: 1px solid #333333;
+}
+
+/* --- Sliders --- */
 .form-range::-webkit-slider-runnable-track { height: 3px; background: #333333; border-radius: 2px; }
 .form-range::-webkit-slider-thumb { background: #FC9E4F; width: 12px; height: 12px; margin-top: -4.5px; }
 .form-range::-moz-range-track { height: 3px; background: #333333; border-radius: 2px; }
 .form-range::-moz-range-thumb { background: #FC9E4F; width: 12px; height: 12px; border: none; }
+.mixer-value { font-size: .75rem; color: #FC9E4F; font-weight: 600; min-width: 28px; text-align: center; }
+
+/* --- Detail modal --- */
 .detail-poster { width: 150px; object-fit: cover; }
 .modal-content.bg-dark { background: #242424 !important; color: #e0e0e0; }
 @media (max-width: 576px) { .detail-poster { width: 100px; } }
+
+/* --- Buttons --- */
 .btn-select-movie { background: #FC9E4F; color: #1a1a1a; border: none; font-weight: 600; font-size: .8rem; }
 .btn-select-movie:hover { background: #e88a3a; color: #1a1a1a; }
+.btn-outline-light { color: #e0e0e0; border-color: #e0e0e060; }
+.btn-outline-light:hover { background: #FC9E4F; color: #1a1a1a; }
+
+/* --- Utilities --- */
+.text-secondary { color: #e0e0e080 !important; }
+.text-warning { color: #FC9E4F !important; }
+h1, h6 { color: #e0e0e0; }
+.form-label { color: #e0e0e0; }
