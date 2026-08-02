@@ -6,8 +6,8 @@ import os
 DATA_DIR = os.environ.get("DATA_DIR", ".")
 FAISS_INDEX_PATH = os.path.join(DATA_DIR, "movies.faiss")
 FAISS_IDS_PATH = os.path.join(DATA_DIR, "movies_faiss_ids.npy")
-MODEL_NAME = "all-MiniLM-L6-v2"
-DIMS = 384
+MODEL_NAME = "all-mpnet-base-v2"
+DIMS = 768
 
 _model = None
 _faiss_index = None
