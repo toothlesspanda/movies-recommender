@@ -46,13 +46,23 @@ def api_lucky():
     movie_id = request.args.get("movie_id", type=int)
 
     db = get_db()
-    exclude_id = movie_id or 0
-    params = [mood, energy, tension, weight, exclude_id]
+    target_emotions = [mood, energy, tension, weight]
 
-    # Use genres from source movie if provided
-    if movie_id and not genre_ids:
-        rows = db.execute("SELECT genre_id FROM movie_genres WHERE movie_id = ?", (movie_id,)).fetchall()
-        genre_ids = [r["genre_id"] for r in rows]
+    # With source movie: use embeddings + emotions (like find_related)
+    if movie_id:
+        me_movie = movie_embeddings_repo.get_embedding_by_movie_id(db, movie_id)
+        memo_movie = movie_emotions_repo.get_emotion_by_movie_id(db, movie_id)
+        if me_movie and memo_movie:
+            source_emotions = [memo_movie["mood"], memo_movie["energy"], memo_movie["tension"], memo_movie["weight"]]
+            top_ids = find_related(me_movie["embedding"], movie_id, target_emotions, source_emotions, limit=300, candidates_pool=800)
+            if top_ids:
+                pick_id = random.choice(top_ids)
+                movie = movie_repo.get_movie_detail(db, pick_id)
+                if movie:
+                    return jsonify(movie)
+
+    # Without source movie: emotion-only search with genre filter
+    params = [mood, energy, tension, weight]
 
     genre_filter = ""
     if genre_ids:
@@ -67,14 +77,13 @@ def api_lucky():
         FROM movie_emotions me
         JOIN movies m ON m.id = me.movie_id
         WHERE m.vote_count >= 50 AND m.vote_average >= 5
-        AND m.id != ?
         {genre_filter}
         ORDER BY dist ASC
-        LIMIT 50
+        LIMIT 200
     """, params).fetchall()
     if not rows:
         return jsonify({"error": "No movies found"}), 404
-    pick = random.choice(rows[:20])
+    pick = random.choice(rows)
     movie = movie_repo.get_movie_detail(db, pick["id"])
     return jsonify(movie)
 
