@@ -3,18 +3,31 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Lucky Movie — Find your next favourite film</title>
-  <meta name="description" content="Discover movies based on what you already love. Search a film, tune your mood, and find your next favourite movie with AI-powered recommendations.">
+  <title>Lucky Movie — Find movies like your favourites | Movie recommendations by mood</title>
+  <meta name="description" content="Find movies like your favourites. Discover and get suggestions for similar films. We recommend movies by mood, genre, and emotion. Over 500,000 movies to explore.">
   <link rel="canonical" href="https://luckymovie.link/">
   <!-- Open Graph -->
-  <meta property="og:title" content="Lucky Movie — Find your next favourite film">
-  <meta property="og:description" content="Discover movies based on what you already love. AI-powered recommendations by mood, genre, and emotion.">
+  <meta property="og:title" content="Lucky Movie — Find movies like your favourites | Movie recommendations by mood">
+  <meta property="og:description" content="Find movies like your favourites. Discover similar films by mood, genre, and emotion.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://luckymovie.link/">
   <!-- Twitter -->
   <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="Lucky Movie — Find your next favourite film">
-  <meta name="twitter:description" content="Discover movies based on what you already love. AI-powered recommendations by mood, genre, and emotion.">
+  <meta name="twitter:title" content="Lucky Movie — Find movies like your favourites | Movie recommendations by mood">
+  <meta name="twitter:description" content="Find movies like your favourites. Discover similar films by mood, genre, and emotion.">
+  <!-- Schema -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Lucky Movie",
+    "url": "https://luckymovie.link",
+    "description": "Discover movies based on what you already love. Search a film, tune your mood, and find your next favourite movie with AI-powered recommendations.",
+    "applicationCategory": "Entertainment",
+    "operatingSystem": "All",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+  }
+  </script>
   <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
