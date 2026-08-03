@@ -6,4 +6,5 @@ movies.db-wal
 movies.db-shm
 movies.faiss
 movies_faiss_ids.npy
+failed_credits.txt
 .DS_Store

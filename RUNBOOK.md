@@ -67,13 +67,13 @@ python scripts/sync_recent.py
 
 ```bash
 # Upload DB
-rsync -avP movies.db root@65.21.55.24:/root/data/
+rsync -avP movies.db root@YOUR_SERVER_IP:/root/data/
 
 # Upload Faiss index
-rsync -avP movies.faiss movies_faiss_ids.npy root@65.21.55.24:/root/data/
+rsync -avP movies.faiss movies_faiss_ids.npy root@YOUR_SERVER_IP:/root/data/
 
 # Upload all data files at once
-rsync -avP movies.db movies.faiss movies_faiss_ids.npy root@65.21.55.24:/root/data/
+rsync -avP movies.db movies.faiss movies_faiss_ids.npy root@YOUR_SERVER_IP:/root/data/
 ```
 
 ## Docker
