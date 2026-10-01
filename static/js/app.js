@@ -22,6 +22,15 @@ searchInput.addEventListener("input", () => {
   debounceTimer = setTimeout(() => searchMovies(q), 300);
 });
 
+searchInput.addEventListener("keydown", (e) => {
+  if (e.key !== "Enter") return;
+  e.preventDefault();
+  dropdown.classList.remove("show");
+  const q = searchInput.value.trim();
+  if (q.length < 2) return;
+  semanticSearch(q);
+});
+
 async function searchMovies(q) {
   const res = await fetch(`/api/search?q=${encodeURIComponent(q)}`);
   const movies = await res.json();
@@ -46,6 +55,27 @@ async function searchMovies(q) {
     dropdown.appendChild(item);
   });
   dropdown.classList.add("show");
+}
+
+// --- Semantic search ---
+
+async function semanticSearch(q) {
+  document.getElementById("lucky-controls").classList.add("d-none");
+  document.getElementById("lucky-intro").classList.add("d-none");
+  document.getElementById("source-movie").classList.add("d-none");
+  document.getElementById("results").classList.remove("d-none");
+
+  const grid = document.getElementById("related-grid");
+  grid.innerHTML = '<div class="text-center py-5"><div class="spinner-border text-secondary" role="status"><span class="visually-hidden">Loading...</span></div></div>';
+  document.getElementById("no-related").classList.add("d-none");
+
+  const res = await fetch(`/api/semantic-search?q=${encodeURIComponent(q)}`);
+  const data = await res.json();
+
+  currentMovieId = null;
+  lastRelatedMovies = data.related || [];
+  trackEvent("semantic-search");
+  renderRelated(lastRelatedMovies);
 }
 
 // --- Movie selection ---

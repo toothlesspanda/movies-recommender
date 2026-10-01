@@ -47,6 +47,9 @@ Cast: {actors or ''}
 Synopsis: {description or ''}"""
 
 
+def generate_embedding(text):
+    return get_model().encode(text).astype(np.float32)
+  
 def generate_embeddings_batch(texts):
     return get_model().encode(texts, batch_size=64).astype(np.float32)
 

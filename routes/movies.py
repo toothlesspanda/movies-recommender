@@ -4,7 +4,8 @@ from db import get_db
 import repositories.movies as movie_repo
 import repositories.movie_embeddings as movie_embeddings_repo
 import repositories.movie_emotions as movie_emotions_repo
-from services.recommendation import find_related
+from services.recommendation import find_related_to_movie, find_semanticaly_related
+from services.embeddings import generate_embedding
 
 bp = Blueprint("movies", __name__)
 
@@ -25,6 +26,31 @@ def api_search():
     rows = movie_repo.search(db, q)
     return jsonify([dict(r) for r in rows])
 
+@bp.route("/api/semantic-search")
+def api_semantic_search():
+    q = request.args.get("q", "").strip()
+    if not q:
+        return jsonify([])
+    db = get_db()
+    input_vector = generate_embedding(q)
+    top_movie_ids = find_semanticaly_related(input_vector, limit=300, candidates_pool=800)
+    related_rows = movie_repo.get_movies_by_ids(db, top_movie_ids)
+    
+    by_id = {r["id"]: dict(r) for r in related_rows}
+    related = [by_id[mid] for mid in top_movie_ids if mid in by_id][:100]
+    
+    emotions = {
+      "mood": request.args.get("mood", 50, type=int),
+      "energy":request.args.get("energy", 50, type=int),
+      "tension": request.args.get("tension", 50, type=int),
+      "weight": request.args.get("weight", 50, type=int)
+    }
+
+    return jsonify({
+        "source": q,
+        "source_emotions": dict(emotions),
+        "related": related,
+    })
 
 @bp.route("/api/movies/<int:movie_id>")
 def api_movie_detail(movie_id):
@@ -48,13 +74,13 @@ def api_lucky():
     db = get_db()
     target_emotions = [mood, energy, tension, weight]
 
-    # With source movie: use embeddings + emotions (like find_related)
+    # With source movie: use embeddings + emotions (like find_related_to_movie)
     if movie_id:
         me_movie = movie_embeddings_repo.get_embedding_by_movie_id(db, movie_id)
         memo_movie = movie_emotions_repo.get_emotion_by_movie_id(db, movie_id)
         if me_movie and memo_movie:
             source_emotions = [memo_movie["mood"], memo_movie["energy"], memo_movie["tension"], memo_movie["weight"]]
-            top_ids = find_related(me_movie["embedding"], movie_id, target_emotions, source_emotions, limit=300, candidates_pool=800)
+            top_ids = find_related_to_movie(me_movie["embedding"], movie_id, target_emotions, source_emotions, limit=300, candidates_pool=800)
             if top_ids:
                 pick_id = random.choice(top_ids)
                 movie = movie_repo.get_movie_detail(db, pick_id)
@@ -110,9 +136,9 @@ def api_related(movie_id):
     ]
 
     source_emotions = [source_profile["mood"], source_profile["energy"], source_profile["tension"], source_profile["weight"]]
-    top_movie_ids = find_related(me_movie["embedding"], movie_id, target_emotions, source_emotions, limit=300, candidates_pool=800)
+    top_movie_ids = find_related_to_movie(me_movie["embedding"], movie_id, target_emotions, source_emotions, limit=300, candidates_pool=800)
     related_rows = movie_repo.get_movies_by_ids(db, top_movie_ids)
-    # Preserve ranking order from find_related
+    # Preserve ranking order from find_related_to_movie
     by_id = {r["id"]: dict(r) for r in related_rows}
     related = [by_id[mid] for mid in top_movie_ids if mid in by_id][:100]
 

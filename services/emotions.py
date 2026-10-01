@@ -84,3 +84,11 @@ def compute_movie_emotions_batch(descriptions, genres_strs):
         genre_scores = classify_genres(genres_str)
         results.append(_combine(synopsis_scores, genre_scores))
     return results
+
+def compute_movie_emotion(descriptions):
+    synopsis_scores_list = classify_synopsis_batch(descriptions)
+    results = []
+    for synopsis_scores, genres_str in zip(synopsis_scores_list, genres_strs):
+        genre_scores = classify_genres(genres_str)
+        results.append(_combine(synopsis_scores, genre_scores))
+    return results

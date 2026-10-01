@@ -39,7 +39,7 @@ def _load():
     print(f"Loaded Faiss index ({_faiss_index.ntotal} vectors) + {len(ids)} emotions.")
 
 
-def find_related(source_embedding, movie_id, target_emotions, source_emotions=None, limit=50, candidates_pool=200):
+def find_related_to_movie(source_embedding, movie_id, target_emotions, source_emotions=None, limit=50, candidates_pool=200):
     _load()
 
     # Dynamic weighting: more slider movement = more emotional weight
@@ -71,5 +71,22 @@ def find_related(source_embedding, movie_id, target_emotions, source_emotions=No
             emo_idx = _emotions_id_map[mid]
             emo_score = similar.cosine_similarity(target_vec, _emotions_matrix[emo_idx:emo_idx+1])[0]
             candidates[mid] += emo_score * emo_weight
+
+    return sorted(candidates, key=candidates.get, reverse=True)[:limit]
+
+
+def find_semanticaly_related(input_embedding, limit=50, candidates_pool=200):
+    _load()
+
+    # Reshape and normalise for cosine similarity
+    vector = np.array(input_embedding, dtype=np.float32).reshape(1, -1).copy()
+    faiss.normalize_L2(vector)
+
+    # Factual similarity via Faiss
+    factual_scores, factual_indices = _faiss_index.search(vector, candidates_pool)
+    candidates = {}
+    for score, idx in zip(factual_scores[0], factual_indices[0]):
+        mid = int(_faiss_ids[idx])
+        candidates[mid] = score
 
     return sorted(candidates, key=candidates.get, reverse=True)[:limit]
