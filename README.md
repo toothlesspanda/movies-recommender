@@ -108,6 +108,17 @@ python scripts/sync_recent.py           # Last 21 days
 python scripts/sync_recent.py --days 7  # Last 7 days
 ```
 
+## Deploy
+
+Deployment is automated via GitHub Actions. Push a version tag to trigger a build and deploy to the server:
+
+```bash
+git tag v1.x.x
+git push origin main --tags
+```
+
+This will build the Docker image, push it to GitHub Container Registry, and deploy it to the server via SSH.
+
 ## API
 
 ### `GET /api/search?q=<query>`
