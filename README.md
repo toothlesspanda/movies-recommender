@@ -1,5 +1,7 @@
 # Movies Recommender
 
+![Lucky Movie](static/og-image.png)
+
 Movie recommendation system that finds similar movies based on factual similarity (plot, cast, genres) and emotional profile (mood, energy, tension, weight).
 
 ## How it works
